@@ -32,7 +32,17 @@ echo "Loading PSCIS .csv files"
 # csvkit/csvsql doesn't handle weird dates properly
 # remove expiration of 9999 from pscis_crossing_subtype_codes.csv
 sed -i '' 's/,9999-12-31 00:00:00,/,,/g' $tmp/pscis_crossing_subtype_codes.csv
-csv2pg -s pscis -e iso-8859-1 $tmp/pscis*csv
+# lowercasify headers
+for csvfile in $tmp/pscis*.csv; do
+    tablename=`basename $csvfile .csv`
+    psql -c "DROP TABLE IF EXISTS "$tablename
+    shampoo -i $csvfile | csvsql \
+                       -e iso-8859-1 \
+                       --db postgresql://postgres:postgres@localhost:5432/postgis \
+                       --table $tablename \
+                       --insert \
+                       --db-schema pscis
+done
 
 # send geojson files to postgres, BC Albers
 echo "Loading PSCIS spatial files"

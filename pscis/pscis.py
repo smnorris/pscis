@@ -28,6 +28,7 @@ def apply_updates():
     Apply updates that haven't yet made it to BCGW Prod
     """
     for q in updates:
+        print q
         db.execute(updates[q])
 
 
