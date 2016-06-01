@@ -41,7 +41,7 @@ for table in $tmp/pscis*.json; do
     tablename=`basename $table .json`
     PGCLIENTENCODING=LATIN1 ogr2ogr \
         -f PostgreSQL \
-        -s_srs EPSG:4326 \
+        -s_srs EPSG:3005 \
         -t_srs EPSG:3005 \
         PG:"dbname=$dbname user=$dbuser host=$dbhost port=$dbport" \
         -lco GEOMETRY_NAME=geom \
