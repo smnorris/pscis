@@ -1,8 +1,8 @@
 -- create a table holding all modelled crossings (bridges and culverts),
 -- plus add some fwa attribs for matching and networking queries
-DROP TABLE IF EXISTS fp_working.model_crossings_all;
+DROP TABLE IF EXISTS fish_passage.road_stream_crossings_all;
 
-CREATE TABLE fp_working.model_crossings_all AS
+CREATE TABLE fish_passage.road_stream_crossings_all AS
 SELECT
   x.crossing_id,
   'bridge'::text AS model_xing_type,
@@ -34,5 +34,5 @@ INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON x.linear_feature_id = s.linear_feature_id;
 
 -- create indexes
-ALTER TABLE fp_working.model_crossings_all ADD PRIMARY KEY (crossing_id);
-CREATE INDEX model_x_all_geom ON fp_working.model_crossings_all using gist (geom);
+ALTER TABLE fish_passage.road_stream_crossings_all ADD PRIMARY KEY (crossing_id);
+CREATE INDEX model_x_all_geom ON fish_passage.road_stream_crossings_all using gist (geom);

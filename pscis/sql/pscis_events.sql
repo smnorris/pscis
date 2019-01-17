@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS fp_working.pscis_events;
+DROP TABLE IF EXISTS whse_fish.pscis_events;
 
-CREATE TABLE fp_working.pscis_events AS
+CREATE TABLE whse_fish.pscis_events AS
 SELECT DISTINCT ON (stream_crossing_id) * FROM
 (SELECT
   stream_crossing_id,
@@ -12,7 +12,7 @@ SELECT DISTINCT ON (stream_crossing_id) * FROM
   downstream_route_measure,
   watershed_group_code,
   total_score AS score
-FROM fp_working.pscis_model_match_pts
+FROM whse_fish.pscis_model_match_pts
 UNION ALL
 SELECT
   stream_crossing_id,
@@ -24,7 +24,7 @@ SELECT
   downstream_route_measure,
   watershed_group_code,
   total_score AS score
-FROM fp_working.pscis_events_scored) AS foo
-ORDER BY stream_crossing_id, score desc;
+FROM whse_fish.pscis_events_scored) AS foo
+ORDER BY stream_crossing_id, score, model_crossing_id DESC NULLS LAST;
 
-ALTER TABLE fp_working.pscis_events ADD PRIMARY KEY (stream_crossing_id);
+ALTER TABLE whse_fish.pscis_events ADD PRIMARY KEY (stream_crossing_id);

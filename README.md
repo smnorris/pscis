@@ -1,11 +1,27 @@
-pscis
-======
+# PSCIS
 
 Tools for working with BC Provincial Stream Crossing Information System (PSCIS)
 
+## Requirements
 
-Usage
--------------------------
+- Python 3
+- PostgreSQL/PostGIS
+
+
+## Installation
+
+    git clone <pscis repo>
+    cd pscis
+    pip install --user .
+
+## Configuration
+
+Create an environment variable FWA_DB and set it to the SQLAlchemy db url for your database. For example:
+
+MacOS/Linux etc: export FWA_DB=postgresql://postgres:postgres@localhost:5432/fwadb
+
+Windows: SET FWA_DB="postgresql://postgres:postgres@localhost:5432/fwadb"
+
 
 1. Get a full extract of the latest data from source.
    On Province of BC GTS server:

@@ -7,9 +7,9 @@
 -- Also, ensure that only the closest PSCIS crossing is matched to a given
 -- modelled crossing
 
-DROP TABLE IF EXISTS whse_fish.pscis_model_match_pts;
+DROP TABLE IF EXISTS fp_working.pscis_model_match_pts_qa;
 
-CREATE TABLE whse_fish.pscis_model_match_pts AS
+CREATE TABLE fp_working.pscis_model_match_pts_qa AS
 -- add assessment attributes required for scoring to pscis_points_all
 WITH pscis AS (
 SELECT
@@ -17,11 +17,11 @@ SELECT
  a.stream_name,
  a.crossing_subtype_code,
  a.downstream_channel_width
-FROM whse_fish.pscis_points_all p
-LEFT OUTER JOIN whse_fish.pscis_assessment_svw a
+FROM pscis.pscis_points_all p
+LEFT OUTER JOIN pscis.pscis_assessment_svw a
 ON p.stream_crossing_id = a.stream_crossing_id)
 
--- match a given modelled crossing to only one PSCIS crossing (the hightest scored)
+-- return only one match per modelled crossing
 SELECT DISTINCT ON (model_crossing_id) * FROM
 (
 -- Return only the max scoring result by using DISTINCT ON (stream_crossing_id) and sorting on score
@@ -87,7 +87,7 @@ FROM pscis AS a
 -- find nearest neighbours
 CROSS JOIN LATERAL
 ( SELECT crossing_id, fwa_watershed_code, local_watershed_code, blue_line_key, downstream_route_measure, watershed_group_code, stream_order, gnis_name, model_xing_type, ST_Distance(b.geom, a.geom) as dist_m
-    FROM fish_passage.road_stream_crossings_all AS b
+    FROM fp_working.model_crossings_all AS b
 ORDER BY b.geom <-> a.geom
    LIMIT 5) AS m
 WHERE dist_m < 100
@@ -98,5 +98,5 @@ ORDER BY stream_crossing_id, total_score desc) as bar
 ORDER BY model_crossing_id, total_score DESC NULLS LAST;
 
 -- create idx
-ALTER TABLE whse_fish.pscis_model_match_pts ADD PRIMARY KEY (stream_crossing_id);
-CREATE INDEX pscis_model_match_xingid ON whse_fish.pscis_model_match_pts (model_crossing_id);
+ALTER TABLE fp_working.pscis_model_match_pts_qa ADD PRIMARY KEY (stream_crossing_id);
+CREATE INDEX pscis_model_match_qaxingid ON fp_working.pscis_model_match_pts (model_crossing_id);
