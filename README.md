@@ -5,7 +5,11 @@ Python/Postgres tools for working with BC Provincial Stream Crossing Information
 ## Requirements
 
 - Python 3
-- a PostgreSQL/PostGIS database with BC Freshwater Atlas data loaded and configured via [`fwakit`](https://github.com/smnorris/fwakit)
+- a PostgreSQL/PostGIS database with:
+  + BC Freshwater Atlas data loaded and configured via [`fwakit`](https://github.com/smnorris/fwakit)
+  + `fish_passage.road_stream_crossings_culverts`
+  + `fish_passage.road_stream_crossings_other`
+  + `fish_passage.fish_habitat`
 
 
 ## Installation
