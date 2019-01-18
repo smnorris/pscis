@@ -1,29 +1,44 @@
-from codecs import open as codecs_open
+import os
 from setuptools import setup, find_packages
 
 
-# Get the long description from the relevant file
-with codecs_open("README.rst", encoding="utf-8") as f:
-    long_description = f.read()
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-setup(
-    name="pscis",
-    version="0.0.1",
-    description=u"Tools for working with BC Provincial Stream Crossing Information System (PSCIS)",
-    long_description=long_description,
-    classifiers=[],
-    keywords="",
-    author=u"Simon Norris",
-    author_email="snorris@hillcrestgeo.ca",
-    license="MIT",
-    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=["click"],
-    extras_require={"test": ["pytest"]},
-    entry_points="""
+# Parse the version
+with open('pscis/__init__.py', 'r') as f:
+    for line in f:
+        if line.find("__version__") >= 0:
+            version = line.split("=")[1].strip()
+            version = version.strip('"')
+            version = version.strip("'")
+            break
+
+setup(name='pscis',
+      version=version,
+      description=u"Python/Postgres tools for working with BC Provincial Stream Crossing Information System (PSCIS)",
+      long_description=read('README.md'),
+      long_description_content_type='text/markdown',
+      classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Operating System :: OS Independent",
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6'
+      ],
+      keywords='gis FWA "Freshwater Atlas" BC "British Columbia" streams pscis "fish passage',
+      author=u"Simon Norris",
+      author_email='snorris@hillcrestgeo.ca',
+      url='https://github.com/smnorris/pscis',
+      license='Apache',
+      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      include_package_data=True,
+      zip_safe=False,
+      install_requires=read('requirements.txt').splitlines(),
+      entry_points="""
       [console_scripts]
       pscis=pscis.scripts.cli:cli
       """,
-)
+      )
