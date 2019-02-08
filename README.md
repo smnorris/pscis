@@ -39,12 +39,17 @@ Or, if `FWA_DB` variable is set,
 
     $ pscis load
 
-This script:
+This script loads PSCIS data from DataBC to local db tables in `whse_fish` schema:
 
-- loads PSCIS data from DataBC to local db in `whse_fish` schema
-- references PSCIS sites to the FWA stream network
-- links PSCIS sites to Fish Passage modelled crossings where possible
-- cleans duplicate PSCIS crossings (<5m apart on the same stream)
-- creates output tables for further analysis:
-    + `whse_fish.pscis_events`
-    + `whse_fish.pscis_events_barriers`
+- `pscis_assessment_svw`
+- `pscis_design_proposal_svw`
+- `pscis_habitat_confirmation_svw`
+- `pscis_remediation_svw `
+
+Once data are loaded, the script combines these tables and references all crossings to the FWA stream network. With this done, it attempts to link the PSCIS crossings to Fish Passage modelled crossings where possible. Finally, the script removes PSCIS crossings that are obvious duplications (<5m apart on the same stream).
+
+Output tables are:
+
+- `whse_fish.pscis_events`
+- `whse_fish.pscis_events_barriers` (a subset of `pscis_events`, for convenience)
+- `whse_fish.pscis_events_duplicates` (PSCIS crossings <10m apart, used for QA of the database)

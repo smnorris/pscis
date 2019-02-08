@@ -65,7 +65,8 @@ def load(db_url):
     # above
     db.execute(queries["pscis_load08_duplicates"])
 
-    # drop the preliminary tables
+    # drop the working tables
     db["whse_fish.pscis_events_prelim1"].drop()
     db["whse_fish.pscis_events_prelim2"].drop()
     db["whse_fish.pscis_events_prelim3"].drop()
+    db["whse_fish.pscis_model_match_pts"].drop()
