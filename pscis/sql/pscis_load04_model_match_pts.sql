@@ -82,7 +82,6 @@ SELECT
     WHEN a.downstream_channel_width <> 0 AND a.downstream_channel_width / m.stream_order >= 3 AND m.stream_order < 4 AND m.stream_order >= 2 THEN 0
     WHEN a.downstream_channel_width <> 0 AND a.downstream_channel_width / m.stream_order >= 3 AND m.stream_order < 2 THEN -75
   END AS width_order_score
---FROM pscis.pscis_assessment_svw AS a
 FROM pscis AS a
 -- find nearest neighbours
 CROSS JOIN LATERAL

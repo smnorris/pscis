@@ -35,7 +35,7 @@ SELECT
 FROM whse_fish.pscis_events_prelim1 e
 INNER JOIN whse_basemapping.fwa_stream_networks_sp str
 ON e.linear_feature_id = str.linear_feature_id
-LEFT OUTER JOIN pscis.pscis_assessment_svw a ON e.stream_crossing_id = a.stream_crossing_id
+LEFT OUTER JOIN whse_fish.pscis_assessment_svw a ON e.stream_crossing_id = a.stream_crossing_id
 ) AS foo
 ORDER BY stream_crossing_id, total_score desc;
 
