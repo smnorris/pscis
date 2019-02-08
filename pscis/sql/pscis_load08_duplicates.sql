@@ -18,5 +18,3 @@ CROSS JOIN LATERAL
      ORDER BY b.geom <-> a.geom LIMIT 1
    ) AS s
 ORDER BY a.stream_crossing_id, dist_m;
-
-ALTER TABLE whse_fish.pscis_points_duplicates ADD PRIMARY KEY (stream_crossing_id);
