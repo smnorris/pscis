@@ -64,3 +64,8 @@ def load(db_url):
     # apart - this is different and separate from the pruning of events
     # above
     db.execute(queries["pscis_load08_duplicates"])
+
+    # drop the preliminary tables
+    db["whse_fish.pscis_events_prelim1"].drop()
+    db["whse_fish.pscis_events_prelim2"].drop()
+    db["whse_fish.pscis_events_prelim3"].drop()
