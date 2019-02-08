@@ -29,7 +29,11 @@ Windows:
 
 ## Usage
 
-To load and prep data (if your `FWA_DB` variable is set:
+To load and prep data:
+
+    $ pscis load --db_url postgresql://postgres:postgres@localhost:5432/fwadb
+
+Or, if FWA_DB is set,
 
     $ pscis load
 
