@@ -1,4 +1,4 @@
--- Find crossings that are wthin 10m of another
+-- Report on crossings that are wthin 10m of another
 
 DROP TABLE IF EXISTS whse_fish.pscis_points_duplicates;
 

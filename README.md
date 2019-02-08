@@ -33,7 +33,7 @@ To load and prep data:
 
     $ pscis load --db_url postgresql://postgres:postgres@localhost:5432/fwadb
 
-Or, if FWA_DB is set,
+Or, if `FWA_DB` variable is set,
 
     $ pscis load
 
@@ -46,5 +46,3 @@ This script does the following:
 - creates output tables:
     + `whse_fish.pscis_events`
     + `whse_fish.pscis_events_barriers`
-
-Several additional general purpose queries are provided, see the `sql` folder.
