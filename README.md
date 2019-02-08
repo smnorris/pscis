@@ -1,6 +1,8 @@
 # PSCIS
 
-Tools for working with BC Provincial Stream Crossing Information System (PSCIS)
+Tools for working with [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/land-based-investment/investment-categories/fish-passage) (PSCIS).
+
+The PSCIS system monitors fish passage on road-stream crossings throughout the province. This repository downloads the PSCIS data to a Postgres db and links the crossings to the BC Freshwater Atlas - permitting upstream/downstream queries that enable  reporting on linear habitat potentially blocked by failed culverts.
 
 ## Requirements
 
@@ -37,12 +39,12 @@ Or, if `FWA_DB` variable is set,
 
     $ pscis load
 
-This script does the following:
+This script:
 
 - loads PSCIS data from DataBC to local db in `whse_fish` schema
 - references PSCIS sites to the FWA stream network
 - links PSCIS sites to Fish Passage modelled crossings where possible
 - cleans duplicate PSCIS crossings (<5m apart on the same stream)
-- creates output tables:
+- creates output tables for further analysis:
     + `whse_fish.pscis_events`
     + `whse_fish.pscis_events_barriers`
