@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_fish.pscis_points_all;
+
 CREATE TABLE whse_fish.pscis_points_all AS
 SELECT
  stream_crossing_id::integer,
@@ -37,4 +39,7 @@ SELECT
  current_crossing_subtype_code,
  geom
 FROM whse_fish.pscis_remediation_svw
-WHERE current_pscis_status = 'REMEDIATED'
+WHERE current_pscis_status = 'REMEDIATED';
+
+ALTER TABLE whse_fish.pscis_points_all ADD PRIMARY KEY (stream_crossing_id);
+CREATE INDEX ON whse_fish.pscis_points_all USING GIST (geom);

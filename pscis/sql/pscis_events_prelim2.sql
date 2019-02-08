@@ -1,7 +1,7 @@
 -- Score pscis events created by snapping to streams
-DROP TABLE IF EXISTS whse_fish.pscis_events_scored;
+DROP TABLE IF EXISTS whse_fish.pscis_events_prelim2;
 
-CREATE TABLE whse_fish.pscis_events_scored AS
+CREATE TABLE whse_fish.pscis_events_prelim2 AS
 SELECT DISTINCT ON (stream_crossing_id)
  *,
  distance_score + name_score + width_order_score AS total_score
@@ -32,11 +32,11 @@ SELECT
     WHEN a.downstream_channel_width <> 0 AND a.downstream_channel_width / str.stream_order >= 3 AND str.stream_order < 4 AND str.stream_order >= 2 THEN 0
     WHEN a.downstream_channel_width <> 0 AND a.downstream_channel_width / str.stream_order >= 3 AND str.stream_order < 2 THEN -75
   END AS width_order_score
-FROM whse_fish.pscis_stream_events e
+FROM whse_fish.pscis_events_prelim1 e
 INNER JOIN whse_basemapping.fwa_stream_networks_sp str
 ON e.linear_feature_id = str.linear_feature_id
 LEFT OUTER JOIN pscis.pscis_assessment_svw a ON e.stream_crossing_id = a.stream_crossing_id
 ) AS foo
 ORDER BY stream_crossing_id, total_score desc;
 
-CREATE INDEX pscis_events_scored_id ON whse_fish.pscis_events_scored (stream_crossing_id);
+CREATE INDEX ON whse_fish.pscis_events_prelim2 (stream_crossing_id);

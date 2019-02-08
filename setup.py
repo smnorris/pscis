@@ -17,7 +17,7 @@ with open('pscis/__init__.py', 'r') as f:
 
 setup(name='pscis',
       version=version,
-      description=u"Python/Postgres tools for working with BC Provincial Stream Crossing Information System (PSCIS)",
+      description=u"Tools for working with BC Provincial Stream Crossing Information System (PSCIS)",
       long_description=read('README.md'),
       long_description_content_type='text/markdown',
       classifiers=[
@@ -26,9 +26,10 @@ setup(name='pscis',
         "Operating System :: OS Independent",
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
       ],
-      keywords='gis FWA "Freshwater Atlas" BC "British Columbia" streams pscis "fish passage',
+      keywords='gis FWA "Freshwater Atlas" BC "British Columbia" streams PSCIS "fish passage"',
       author=u"Simon Norris",
       author_email='snorris@hillcrestgeo.ca',
       url='https://github.com/smnorris/pscis',
@@ -39,6 +40,6 @@ setup(name='pscis',
       install_requires=read('requirements.txt').splitlines(),
       entry_points="""
       [console_scripts]
-      pscis=pscis.scripts.cli:cli
+      pscis=pscis.cli:cli
       """,
       )
