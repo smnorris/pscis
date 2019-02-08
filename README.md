@@ -9,7 +9,7 @@ The PSCIS system monitors fish passage on road-stream crossings throughout the p
 - Python 3
 - a PostgreSQL/PostGIS database (tested with 10.6/2.5)
 - BC Freshwater Atlas data loaded and configured via [`fwakit`](https://github.com/smnorris/fwakit)
-- BC Fish Passage habitat model data:
+- BC Fish Passage habitat model data (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
     + `fish_passage.road_stream_crossings_culverts`
     + `fish_passage.road_stream_crossings_other`
     + `fish_passage.fish_habitat`
