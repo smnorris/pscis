@@ -31,7 +31,7 @@ Windows:
 
 ## Usage
 
-To load and prep data:
+To load data:
 
     $ pscis load --db_url postgresql://postgres:postgres@localhost:5432/fwadb
 
@@ -39,14 +39,23 @@ Or, if `FWA_DB` variable is set,
 
     $ pscis load
 
-This script loads PSCIS data from DataBC to local db tables in `whse_fish` schema:
+This command loads PSCIS data from DataBC to local db tables in `whse_fish` schema:
 
 - `pscis_assessment_svw`
 - `pscis_design_proposal_svw`
 - `pscis_habitat_confirmation_svw`
 - `pscis_remediation_svw `
 
-Once data are loaded, the script combines these tables and references all crossings to the FWA stream network. With this done, it attempts to link the PSCIS crossings to Fish Passage modelled crossings where possible. Finally, the script removes PSCIS crossings that are obvious duplications (<5m apart on the same stream).
+Once data are loaded, clean/prep it for use:
+
+- reference crossings to the FWA stream network
+- attempt to link the PSCIS crossings Fish Passage modelled crossings
+- try and remove duplicates
+
+
+```
+$ pscis clean
+```
 
 Output tables are:
 

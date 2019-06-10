@@ -5,9 +5,9 @@
 
 -- Then, by selecting DISTINCT ON blue line key and measure, and sorting,
 -- we remove duplicate events, retaining (in order of priority)
---   higher index status (1 REMEDIATED, 2 DESIGN, 3 ASSESSED)
---   most recently assessed
---   closest source point to stream
+--  - higher index status (1 REMEDIATED, 2 DESIGN, 3 ASSESSED)
+--  - most recently assessed
+--  - closest source point to stream
 
 DROP TABLE IF EXISTS whse_fish.pscis_events;
 
@@ -52,7 +52,7 @@ FROM (
   -- this is an easy fix)
     (SELECT *
        FROM whse_fish.pscis_events_prelim3
-      WHERE stream_crossing_id NOT IN (1110, 1106, 6817, 124622)
+      WHERE stream_crossing_id NOT IN (1110, 1106, 6817, 124622, 196740)
     ) b
   -- find points on the same stream, measure is within 5m, not the same pt
     ON a.blue_line_key = b.blue_line_key

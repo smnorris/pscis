@@ -1,4 +1,5 @@
--- Report on crossings that are wthin 10m of another
+-- For general QA, report on duplicated crossings based on points <10m
+-- apart - this is different and separate from the previous pruning of events
 
 DROP TABLE IF EXISTS whse_fish.pscis_points_duplicates;
 

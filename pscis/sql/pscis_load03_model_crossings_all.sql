@@ -1,5 +1,6 @@
 -- create a table holding all modelled crossings (bridges and culverts),
 -- plus add some fwa attribs for matching and networking queries
+
 DROP TABLE IF EXISTS fish_passage.road_stream_crossings_all;
 
 CREATE TABLE fish_passage.road_stream_crossings_all AS

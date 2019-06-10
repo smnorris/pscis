@@ -40,6 +40,6 @@ setup(name='pscis',
       install_requires=read('requirements.txt').splitlines(),
       entry_points="""
       [console_scripts]
-      pscis=pscis.cli:cli
+      pscis=pscis.pscis:cli
       """,
       )

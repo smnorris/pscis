@@ -1,4 +1,7 @@
 -- Score pscis events created by snapping to streams
+-- (scoring attemts to identify crossings which have been matched
+-- to the wrong stream, based on stream name, distance, channel width)
+
 DROP TABLE IF EXISTS whse_fish.pscis_events_prelim2;
 
 CREATE TABLE whse_fish.pscis_events_prelim2 AS

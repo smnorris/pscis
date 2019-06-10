@@ -1,3 +1,6 @@
+-- Combine the two sources, matched to modelled crossings and
+-- matched to streams. Retaining only the highest scored match
+
 DROP TABLE IF EXISTS whse_fish.pscis_events_prelim3;
 
 CREATE TABLE whse_fish.pscis_events_prelim3 AS
