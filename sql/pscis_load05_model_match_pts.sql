@@ -29,6 +29,9 @@ SELECT DISTINCT ON (stream_crossing_id)
   stream_crossing_id,
   closest_modelled_xing AS model_crossing_id,
   dist_m,
+  linear_feature_id,
+  wscode_ltree,
+  localcode_ltree,
   fwa_watershed_code,
   local_watershed_code,
   blue_line_key,
@@ -44,6 +47,9 @@ SELECT
   a.stream_crossing_id,
   m.crossing_id AS closest_modelled_xing,
   m.dist_m,
+  m.linear_feature_id,
+  m.wscode_ltree,
+  m.localcode_ltree,
   m.fwa_watershed_code,
   m.local_watershed_code,
   m.blue_line_key,
@@ -85,7 +91,7 @@ SELECT
 FROM pscis AS a
 -- find nearest neighbours
 CROSS JOIN LATERAL
-( SELECT crossing_id, fwa_watershed_code, local_watershed_code, blue_line_key, downstream_route_measure, watershed_group_code, stream_order, gnis_name, model_xing_type, ST_Distance(b.geom, a.geom) as dist_m
+( SELECT crossing_id, linear_feature_id, wscode_ltree, localcode_ltree, fwa_watershed_code, local_watershed_code, blue_line_key, downstream_route_measure, watershed_group_code, stream_order, gnis_name, model_xing_type, ST_Distance(b.geom, a.geom) as dist_m
     FROM fish_passage.road_stream_crossings_all AS b
 ORDER BY b.geom <-> a.geom
    LIMIT 5) AS m

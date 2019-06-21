@@ -1,5 +1,5 @@
--- The General event table is useful, but for fish passage
--- reporting, we are mostly interested in barriers
+-- The general event table is useful, but for fish passage
+-- reporting/prioritization, we are mostly interested in barriers
 
 DROP TABLE IF EXISTS whse_fish.pscis_events_barrier;
 

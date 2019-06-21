@@ -7,6 +7,9 @@ CREATE TABLE fish_passage.road_stream_crossings_all AS
 SELECT
   x.crossing_id,
   'bridge'::text AS model_xing_type,
+  x.linear_feature_id,
+  x.wscode_ltree,
+  x.localcode_ltree,
   x.fwa_watershed_code,
   x.local_watershed_code,
   x.blue_line_key,
@@ -22,6 +25,9 @@ UNION ALL
 SELECT
   x.crossing_id,
   'culvert'::text AS model_xing_type,
+  x.linear_feature_id,
+  x.wscode_ltree,
+  x.localcode_ltree,
   x.fwa_watershed_code,
   x.local_watershed_code,
   x.blue_line_key,
