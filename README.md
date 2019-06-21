@@ -29,14 +29,37 @@ A control script is suppliced. The script assumes that your database connection 
 
     ./02_clean.sh
 
+## Method
+
 The sql scripts:
 
-  - reference the points to the FWA stream network
-  - remove duplicate locations/assessments as best as possible
-  - attempt to link the PSICS points to fish passage modelled crossings (road-stream crossings)
+1. Combine the various PSCIS source tables into a single table
 
-Output tables are:
+2. Reference the PSCIS points to the closest stream(s) in FWA stream network  within 100m. A crossing will often be within 100m of more than one stream, all results are kept in this preliminary step
 
-- `whse_fish.pscis_events`
-- `whse_fish.pscis_events_barriers` (a subset of `pscis_events`, for convenience)
-- `whse_fish.pscis_events_duplicates` (PSCIS crossings <10m apart, used for QA of the database)
+3. Based on above, attempting to find the best matched stream using a combination of:
+    - distance of PSCIS point to stream
+    - similarity of PSCIS `stream_name` column to the `gnis_name` of the stream
+    - the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream - if a very wide channel is matched to a low order stream, it is probably not the correct match
+
+4. Combines all modelled crossings into a single table containing points expected to be both open and closed bottom structures
+
+5. Match the PSCIS points to the modelled crossings where possible. Similar to the process above, the script attempts to find the best match based on:
+    - distance of PSCIS point to modelled crossing point
+    - matching the crossing types (if PSCIS `crossing_subtype_code` indicates the crossing is a bridge and the model predicts a bridge, the points are probably a match.
+    - as above, check the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream
+
+6. Combine the results from 1 and 2 above into a single table that is our best guess of which stream the PSCIS crossing should be associdated with
+
+7. Remove locations from the output which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
+    - status (1 REMEDIATED, 2 DESIGN, 3 ASSESSED)
+    - most recently assessed
+    - closest source point to stream
+
+    Output table is `whse_fish.pscis_events`
+
+8. From the output, extract PSCIS crossings that are barriers to create the primary output table used for further fish passage analysis / prioritization work (`whse_fish.pscis_events_barriers`)
+
+9. For general QA of the PSCIS database, create a report of all source crossing locations that are within 10m of another crossing location (`whse_fish.pscis_events_duplicates`)
+
+10. Clean up, deleting temporary tables created by above steps.
