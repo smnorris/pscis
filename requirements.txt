@@ -1,4 +1,0 @@
-click
-pgdata
-fwakit
-bcdata

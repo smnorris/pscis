@@ -1,14 +1,12 @@
 # PSCIS
 
-Tools for working with [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/land-based-investment/investment-categories/fish-passage) (PSCIS).
-
-The PSCIS system monitors fish passage on road-stream crossings throughout the province. This repository downloads the PSCIS data to a Postgres db and links the crossings to the BC Freshwater Atlas - permitting upstream/downstream queries that enable  reporting on linear habitat potentially blocked by failed culverts.
+The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/land-based-investment/investment-categories/fish-passage) (PSCIS) monitors fish passage on road-stream crossings throughout British Columbia. This repository downloads  PSCIS data to a Postgres db and links the crossings to the BC Freshwater Atlas - permitting upstream/downstream queries that enable  reporting on linear habitat potentially blocked by failed culverts.
 
 ## Requirements
 
-- Python 3
-- a PostgreSQL/PostGIS database (tested with 10.6/2.5)
-- BC Freshwater Atlas data loaded and configured via [`fwakit`](https://github.com/smnorris/fwakit)
+- a PostgreSQL/PostGIS database (tested with 11.2/2.5.2)
+- some tool for loading the PSCIS data to the database, such as https://github.com/bcgov/bcdata or https://github.com/smnorris/bcdata
+- BC Freshwater Atlas data loaded and configured via [`fwapg`](https://github.com/smnorris/fwapg)
 - BC Fish Passage habitat model data (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
     + `fish_passage.road_stream_crossings_culverts`
     + `fish_passage.road_stream_crossings_other`
@@ -17,45 +15,25 @@ The PSCIS system monitors fish passage on road-stream crossings throughout the p
 ## Installation
 
     $ git clone https://github.com/smnorris/pscis.git
-    $ pip install -r requirements.txt
 
-For easier usage, create an environment variable `FWA_DB` and set it to the SQLAlchemy db url for your database. For example:
+## Data load
 
-MacOS/Linux etc:
+Using your preferred tool, load the PSCIS data to the `whse_fish` schema in your database. The supplied script uses the Python `bcdata` package:
 
-    export FWA_DB=postgresql://postgres:postgres@localhost:5432/fwadb
-
-Windows:
-
-    SET FWA_DB="postgresql://postgres:postgres@localhost:5432/fwadb"
+    ./01_load.sh
 
 ## Usage
 
-To load data:
+Run the sql scripts in order, using your preferred database client.
+A control script is suppliced. The script assumes that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc)
 
-    $ pscis load --db_url postgresql://postgres:postgres@localhost:5432/fwadb
+    ./02_clean.sh
 
-Or, if `FWA_DB` variable is set,
+The sql scripts:
 
-    $ pscis load
-
-This command loads PSCIS data from DataBC to local db tables in `whse_fish` schema:
-
-- `pscis_assessment_svw`
-- `pscis_design_proposal_svw`
-- `pscis_habitat_confirmation_svw`
-- `pscis_remediation_svw `
-
-Once data are loaded, clean/prep it for use:
-
-- reference crossings to the FWA stream network
-- attempt to link the PSCIS crossings Fish Passage modelled crossings
-- try and remove duplicates
-
-
-```
-$ pscis clean
-```
+  - reference the points to the FWA stream network
+  - remove duplicate locations/assessments as best as possible
+  - attempt to link the PSICS points to fish passage modelled crossings (road-stream crossings)
 
 Output tables are:
 
