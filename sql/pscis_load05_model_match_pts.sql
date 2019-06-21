@@ -92,7 +92,7 @@ FROM pscis AS a
 -- find nearest neighbours
 CROSS JOIN LATERAL
 ( SELECT crossing_id, linear_feature_id, wscode_ltree, localcode_ltree, fwa_watershed_code, local_watershed_code, blue_line_key, downstream_route_measure, watershed_group_code, stream_order, gnis_name, model_xing_type, ST_Distance(b.geom, a.geom) as dist_m
-    FROM fish_passage.road_stream_crossings_all AS b
+    FROM fish_passage.modelled_crossings_all AS b
 ORDER BY b.geom <-> a.geom
    LIMIT 5) AS m
 WHERE dist_m < 100

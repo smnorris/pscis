@@ -22,3 +22,11 @@ ON e.stream_crossing_id = hc.stream_crossing_id
 WHERE p.current_barrier_result_code IN ('BARRIER', 'POTENTIAL');
 
 ALTER TABLE whse_fish.pscis_events_barrier ADD PRIMARY KEY (stream_crossing_id);
+
+CREATE INDEX ON whse_fish.pscis_events_barrier (model_crossing_id);
+CREATE INDEX ON whse_fish.pscis_events_barrier (linear_feature_id);
+CREATE INDEX ON whse_fish.pscis_events_barrier (blue_line_key);
+CREATE INDEX ON whse_fish.pscis_events_barrier USING GIST (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_barrier USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_barrier USING GIST (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_barrier USING BTREE (localcode_ltree);
