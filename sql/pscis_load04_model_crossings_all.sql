@@ -18,7 +18,7 @@ SELECT
   s.gnis_name,
   s.stream_order,
   x.geom
-FROM fish_passage.road_stream_crossings_other x
+FROM fish_passage.modelled_crossings_closed_bottom x
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON x.linear_feature_id = s.linear_feature_id
 UNION ALL
@@ -36,7 +36,7 @@ SELECT
   s.gnis_name,
   s.stream_order,
   x.geom
-FROM fish_passage.road_stream_crossings_culverts x
+FROM fish_passage.modelled_crossings_open_bottom x
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON x.linear_feature_id = s.linear_feature_id;
 
