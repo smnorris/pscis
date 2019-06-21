@@ -67,4 +67,3 @@ AND bluelines.blue_line_key = candidates.blue_line_key
 AND bluelines.distance_to_stream = candidates.distance_to_stream
 INNER JOIN whse_fish.pscis_points_all pts ON bluelines.stream_crossing_id = pts.stream_crossing_id;
 
-ALTER TABLE whse_fish.pscis_events_prelim1 ADD PRIMARY KEY (stream_crossing_id);
