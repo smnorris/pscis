@@ -8,9 +8,8 @@ The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/go
 - some tool for loading the PSCIS data to the database, such as https://github.com/bcgov/bcdata or https://github.com/smnorris/bcdata
 - BC Freshwater Atlas data loaded and configured via [`fwapg`](https://github.com/smnorris/fwapg)
 - BC Fish Passage habitat model data (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
-    + `fish_passage.road_stream_crossings_culverts`
-    + `fish_passage.road_stream_crossings_other`
-    + `fish_passage.fish_habitat`
+    + `fish_passage.modelled_crossings_closed_bottom`
+    + `fish_passage.modelled_crossings_open_bottom`
 
 ## Installation
 
@@ -25,7 +24,7 @@ Using your preferred tool, load the PSCIS data to the `whse_fish` schema in your
 ## Usage
 
 Run the sql scripts in order, using your preferred database client.
-A control script is suppliced. The script assumes that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc)
+A bash control script is supplied for running all the queries, it assumes that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc)
 
     ./02_clean.sh
 
