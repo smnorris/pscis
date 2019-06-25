@@ -48,7 +48,7 @@ The sql scripts:
     - matching the crossing types (if PSCIS `crossing_subtype_code` indicates the crossing is a bridge and the model predicts a bridge, the points are probably a match.
     - as above, check the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream
 
-6. Combine the results from 1 and 2 above into a single table that is our best guess of which stream the PSCIS crossing should be associdated with
+6. Combine the results from 1 and 2 above into a single table that is our best guess of which stream the PSCIS crossing should be associdated with. Because we do not want to overly shift the field GPS coordinates in PSCIS, we are very conservative with matching to modelled points and will primarily snap to the closest point on the stream rather than a modelled crossing farther away.
 
 7. Remove locations from the output which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
     - status (1 REMEDIATED, 2 DESIGN, 3 ASSESSED)
