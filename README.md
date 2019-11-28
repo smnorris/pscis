@@ -5,26 +5,52 @@ The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/go
 ## Requirements
 
 - a PostgreSQL/PostGIS database (tested with 11.2/2.5.2)
-- some tool for loading the PSCIS data to the database, such as https://github.com/bcgov/bcdata or https://github.com/smnorris/bcdata
+- some tool for loading the PSCIS data to the database (https://github.com/smnorris/bcdata makes this simple)
 - BC Freshwater Atlas data loaded and configured via [`fwapg`](https://github.com/smnorris/fwapg)
-- BC Fish Passage habitat model data (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
+- BC Fish Passage potential habitat model (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
     + `fish_passage.modelled_crossings_closed_bottom`
     + `fish_passage.modelled_crossings_open_bottom`
 
-## Installation
+
+## Installation / Setup
+
+No installation required, just download the scripts.
 
     $ git clone https://github.com/smnorris/pscis.git
 
+Once you are set up with `fwapg` no further setup to use these tools should be needed, but the control scripts provided assume\ that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc). Either set these variables, use some other client to run the scripts or edit the scripts to specify your connection parameters.
+
 ## Data load
 
-Using your preferred tool, load the PSCIS data to the `whse_fish` schema in your database. The supplied script uses the Python `bcdata` package:
+Download the PSCIS views from the [BC Data Catalogue](https://catalogue.data.gov.bc.ca/dataset?q=pscis) to the `whse_fish` schema in your postgres database. The supplied script depends on the Python [`bcdata` package](https://github.com/smnorris/bcdata):
 
-    ./01_load.sh
+    ./01_download.sh
+
+You will also need to manually load the modelled crossing data to the `fish_passage` schema. This would look something like this:
+
+```
+psql -c "CREATE SCHEMA IF NOT EXISTS fish_passage"
+
+ogr2ogr \
+  -f PostgreSQL \
+  PG:host=localhost port=5432 user=postgres dbname=postgis password=postgres \
+  -lco SCHEMA=fish_passage \
+  -lco GEOMETRY_NAME=geom \
+  fish_passage_points.gpkg \
+  modelled_crossings_closed_bottom
+
+ogr2ogr \
+  -f PostgreSQL \
+  PG:host=localhost port=5432 user=postgres dbname=postgis password=postgres \
+  -lco SCHEMA=fish_passage \
+  -lco GEOMETRY_NAME=geom \
+  fish_passage_points.gpkg \
+  modelled_crossings_open_bottom
+```
 
 ## Usage
 
-Run the sql scripts in order, using your preferred database client.
-A bash control script is supplied for running all the queries, it assumes that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc)
+Run the sql scripts in order:
 
     ./02_clean.sh
 
