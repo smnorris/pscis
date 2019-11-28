@@ -30,35 +30,64 @@ A bash control script is supplied for running all the queries, it assumes that y
 
 ## Method
 
-The sql scripts:
+The sql scripts / output tables are:
 
-1. Combine the various PSCIS source tables into a single table
+#### `01_pscis_points_all`
 
-2. Reference the PSCIS points to the closest stream(s) in FWA stream network  within 100m. A crossing will often be within 100m of more than one stream, all results are kept in this preliminary step
+Combines the four WHSE_FISH.PSCIS views (assessments, confirmations, designs, remediations) into a single table with unique crossings.
 
-3. Based on above, attempting to find the best matched stream using a combination of:
-    - distance of PSCIS point to stream
-    - similarity of PSCIS `stream_name` column to the `gnis_name` of the stream
-    - the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream - if a very wide channel is matched to a low order stream, it is probably not the correct match
+#### `02_pscis_events_prelim1`
 
-4. Combines all modelled crossings into a single table containing points expected to be both open and closed bottom structures
+Reference `pscis_points_all` to the closest stream(s) in FWA stream network within 100m. A crossing will often be within 100m of more than one stream, all results are kept in this preliminary step.
 
-5. Match the PSCIS points to the modelled crossings where possible. Similar to the process above, the script attempts to find the best match based on:
-    - distance of PSCIS point to modelled crossing point
-    - matching the crossing types (if PSCIS `crossing_subtype_code` indicates the crossing is a bridge and the model predicts a bridge, the points are probably a match.
-    - as above, check the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream
+#### `03_pscis_events_prelim2`
 
-6. Combine the results from 1 and 2 above into a single table that is our best guess of which stream the PSCIS crossing should be associdated with. Because we do not want to overly shift the field GPS coordinates in PSCIS, we are very conservative with matching to modelled points and will primarily snap to the closest point on the stream rather than a modelled crossing farther away.
+From `events_prelim1`, attempt to find the best matching of the pscis point to stream using a combination of:
 
-7. Remove locations from the output which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
-    - status (1 REMEDIATED, 2 DESIGN, 3 ASSESSED)
+- distance of PSCIS point to stream
+- similarity of PSCIS `stream_name` column to the `gnis_name` of the stream
+- the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream - if a very wide channel is matched to a low order stream, it is probably not the correct match
+
+#### `04_modelled_crossings_all`
+
+Combine all modelled crossings (`fish_passage.modelled_crossings_closed_bottom`, `fish_passage.modelled_crossings_open_bottom`) into a single table containing all modelled road crossings.
+
+
+#### `05_pscis_model_match_pts`
+
+Match PSCIS points to the modelled crossings where possible. Similar to the matching of PSCIS crossings to streams noted above, the script attempts to find the best match based on:
+
+- distance of PSCIS point to modelled crossing point
+- matching the crossing types (if PSCIS `crossing_subtype_code` indicates the crossing is a bridge and the model predicts a bridge, the points are probably a match.
+- as above, check the relationship of PSCIS `downstream_channel_width` to the `stream_order` of the FWA stream
+
+#### `06_pscis_events_prelim3`
+
+Combine the results from 1 and 2 above into a single table that is our best guess of which stream the PSCIS crossing should be associdated with. Because we do not want to overly shift the field GPS coordinates in PSCIS, we are very conservative with matching to modelled points and will primarily snap to the closest point on the stream rather than a modelled crossing farther away.
+
+#### `07_pscis_events`
+
+Remove locations from `pscis_events_prelim3` which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
+    - status (1 REMEDIATED, 2 DESIGN, 3 CONFIRMATION, 4 ASSESSED)
     - most recently assessed
     - closest source point to stream
 
-    Output table is `whse_fish.pscis_events`
+#### `08_pscis_events_barrier`
 
-8. From the output, extract PSCIS crossings that are barriers to create the primary output table used for further fish passage analysis / prioritization work (`whse_fish.pscis_events_barriers`)
+From `pscis_events`, extract only barrier crossings - the primary output table of interest for further fish passage analysis / prioritization work
 
-9. For general QA of the PSCIS database, create a report of all source crossing locations that are within 10m of another crossing location (`whse_fish.pscis_events_duplicates`)
+#### `09_pscis_points_duplicates`
 
-10. Clean up, deleting temporary tables created by above steps.
+For general QA of the PSCIS database, create a report of all source crossing locations that are within 10m of another crossing location.
+
+#### `10_pscis_model_combined`
+
+DRAFT - a first rough cut at combining the PSCIS data and modelled road-stream crossings into a single table for easy upstream / downstream barrier analysis.
+
+To go further with this, we need to determine how to structure and work with our barrier analysis database:
+ - include non-barrier PSCIS structures
+ - include modelled OBS?
+ - include barriers other than road crossings? (Dams, natural barriers etc)
+
+#### `11_cleanup`
+Clean up, deleting temporary tables created by above steps.
