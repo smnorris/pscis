@@ -1,3 +1,6 @@
+#!/bin/bash
+set -euxo pipefail
+
 psql -f sql/load01_pscis_points_all.sql
 psql -f sql/load02_pscis_events_prelim1.sql
 psql -f sql/load03_pscis_events_prelim2.sql
@@ -8,4 +11,4 @@ psql -f sql/load07_pscis_events.sql
 psql -f sql/load08_pscis_events_barrier.sql
 psql -f sql/load09_pscis_points_duplicates.sql
 psql -f sql/load10_pscis_model_combined.sql
-psql -f sql/load11_pscis_cleanup.sql
+psql -f sql/load11_cleanup.sql
