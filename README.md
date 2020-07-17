@@ -4,8 +4,8 @@ The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/go
 
 ## Requirements
 
-- a PostgreSQL/PostGIS database (tested with 11.2/2.5.2)
-- some tool for loading the PSCIS data to the database (https://github.com/smnorris/bcdata makes this simple)
+- a PostgreSQL/PostGIS database (tested with 12.1/3.0.1)
+- [bcdata](https://github.com/smnorris/bcdata)
 - BC Freshwater Atlas data loaded and configured via [`fwapg`](https://github.com/smnorris/fwapg)
 - BC Fish Passage potential habitat model (available on request from the [Fish Passage Technical Working Group](https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/fish/fish-passage)):
     + `fish_passage.modelled_crossings_closed_bottom`
@@ -14,19 +14,20 @@ The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/go
 
 ## Installation / Setup
 
-No installation required, just download the scripts.
+Download the scripts:
 
     $ git clone https://github.com/smnorris/pscis.git
 
-Once you are set up with `fwapg` no further setup to use these tools should be needed, but the control scripts provided assume\ that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc). Either set these variables, use some other client to run the scripts or edit the scripts to specify your connection parameters.
+Once the FWA database is set up via `fwapg` no further setup should be needed.
+The scripts assume that your database connection paramaters are stored as environment variables (`$PGHOST`, `$PGUSER` etc).
 
 ## Data load
 
-Download the PSCIS views from the [BC Data Catalogue](https://catalogue.data.gov.bc.ca/dataset?q=pscis) to the `whse_fish` schema in your postgres database. The supplied script depends on the Python [`bcdata` package](https://github.com/smnorris/bcdata):
+Load the [PSCIS tables](https://catalogue.data.gov.bc.ca/dataset?q=pscis) to the `whse_fish` schema:
 
     ./01_download.sh
 
-You will also need to manually load the modelled crossing data to the `fish_passage` schema. This would look something like this:
+Load the modelled crossing tables (closed bottom/culverts and open bottom/bridges) to the `fish_passage` schema. For example:
 
 ```
 psql -c "CREATE SCHEMA IF NOT EXISTS fish_passage"
