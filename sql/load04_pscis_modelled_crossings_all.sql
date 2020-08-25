@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS fish_passage.modelled_crossings_all;
 CREATE TABLE fish_passage.modelled_crossings_all AS
 SELECT
   x.crossing_id,
-  'bridge'::text AS model_xing_type,
+  'culvert'::text AS model_xing_type,
   x.linear_feature_id,
   x.wscode_ltree,
   x.localcode_ltree,
@@ -24,7 +24,7 @@ ON x.linear_feature_id = s.linear_feature_id
 UNION ALL
 SELECT
   x.crossing_id,
-  'culvert'::text AS model_xing_type,
+  'bridge'::text AS model_xing_type,
   x.linear_feature_id,
   x.wscode_ltree,
   x.localcode_ltree,
