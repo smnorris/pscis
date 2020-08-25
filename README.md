@@ -23,7 +23,7 @@ The scripts assume that your database connection paramaters are stored as enviro
 
 ## Data load
 
-Load the [PSCIS tables](https://catalogue.data.gov.bc.ca/dataset?q=pscis) to the `whse_fish` schema:
+Load the [PSCIS tables](https://catalogue.data.gov.bc.ca/dataset?q=pscis) to the `whse_fish` schema, plus the lookup matching PSCIS points to FWA streams and modelled crossings (`data/pscis_stream_matching.csv`).
 
     ./01_download.sh
 
@@ -94,7 +94,7 @@ Combine the results from 1 and 2 above into a single table that is our best gues
 
 #### `07_pscis_events`
 
-Remove locations from `pscis_events_prelim3` which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
+Add all PSCIS records that have been manually matched to streams to the event table (currently `BULK`, `ELKR`, `HORS`, `LNIC`). For remaining points, remove locations from `pscis_events_prelim3` which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
     - status (1 REMEDIATED, 2 DESIGN, 3 CONFIRMATION, 4 ASSESSED)
     - most recently assessed
     - closest source point to stream
