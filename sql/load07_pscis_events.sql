@@ -15,6 +15,8 @@ CREATE TABLE whse_fish.pscis_events
  downstream_route_measure double precision     ,
  watershed_group_code     character varying(4) ,
  score                    integer              ,
+ pscis_status             text                 ,
+ current_barrier_result_code text              ,
  geom                     geometry(Point, 3005)
 );
 
@@ -38,13 +40,21 @@ WITH referenced AS
   (ST_LineLocatePoint(s.geom, ST_ClosestPoint(s.geom, p.geom)) * s.length_metre) + s.downstream_route_measure
   )))) as downstream_route_measure,
   s.watershed_group_code,
-  NULL::integer as score
+  NULL::integer as score,
+  CASE
+    WHEN hc.stream_crossing_id IS NOT NULL
+    THEN 'HABITAT CONFIRMATION'
+    ELSE p.current_pscis_status
+  END AS pscis_status,
+  p.current_barrier_result_code
 FROM whse_fish.pscis_stream_matching a
 INNER JOIN whse_fish.pscis_points_all p
 ON a.stream_crossing_id = p.stream_crossing_id
 LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_sp s
-ON a.linear_feature_id = s.linear_feature_id)
-
+ON a.linear_feature_id = s.linear_feature_id
+LEFT OUTER JOIN whse_fish.pscis_habitat_confirmation_svw hc
+ON a.stream_crossing_id = hc.stream_crossing_id
+)
 -- ensure that we include points that do not get referenced
 -- (so they are not added later by the automated process)
 INSERT INTO whse_fish.pscis_events
@@ -86,6 +96,12 @@ SELECT
   p.downstream_route_measure,
   p.watershed_group_code,
   p.score,
+  CASE
+    WHEN hc.stream_crossing_id IS NOT NULL
+    THEN 'HABITAT CONFIRMATION'
+    ELSE pa.current_pscis_status
+  END AS pscis_status,
+  pa.current_barrier_result_code,
   ST_Force2D((ST_Dump(ST_LocateAlong(s.geom, p.downstream_route_measure))).geom) as geom
 FROM (
   SELECT DISTINCT ON (blue_line_key, m_mid)
@@ -139,6 +155,10 @@ FROM (
 AS p
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON p.linear_feature_id = s.linear_feature_id
+INNER JOIN whse_fish.pscis_points_all pa
+ON p.stream_crossing_id = pa.stream_crossing_id
+LEFT OUTER JOIN whse_fish.pscis_habitat_confirmation_svw hc
+ON p.stream_crossing_id = hc.stream_crossing_id
 ON CONFLICT DO NOTHING; -- don't re-insert data we've already manually matched
 
 -- now delete crossings that aren't matched to streams

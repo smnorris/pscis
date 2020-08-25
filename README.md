@@ -94,20 +94,20 @@ Combine the results from 1 and 2 above into a single table that is our best gues
 
 #### `07_pscis_events`
 
-Add all PSCIS records that have been manually matched to streams to the event table (currently `BULK`, `ELKR`, `HORS`, `LNIC`). For remaining points, remove locations from `pscis_events_prelim3` which are obvious duplicates (instream position is within 5m). The PSCIS feature retained is based on (in order of priority):
+Create primary output table of interest - all pscis records (that are on a stream) as points on the FWA stream network.
+Do this by first adding all PSCIS records that have been manually matched to streams to the event table (currently `BULK`, `ELKR`, `HORS`, `LNIC`).
+Then for remaining points, remove locations from `pscis_events_prelim3` which are obvious duplicates (instream position is within 5m).
+The PSCIS feature retained is based on (in order of priority):
     - status (1 REMEDIATED, 2 DESIGN, 3 CONFIRMATION, 4 ASSESSED)
     - most recently assessed
     - closest source point to stream
 
-#### `08_pscis_events_barrier`
 
-From `pscis_events`, extract only barrier crossings - the primary output table of interest for further fish passage analysis / prioritization work
-
-#### `09_pscis_points_duplicates`
+#### `08_pscis_points_duplicates`
 
 For general QA of the PSCIS database, create a report of all source crossing locations that are within 10m of another crossing location.
 
-#### `10_pscis_model_combined`
+#### `09_pscis_model_combined`
 
 DRAFT - a first rough cut at combining the PSCIS data and modelled road-stream crossings into a single table for easy upstream / downstream barrier analysis.
 
@@ -116,5 +116,5 @@ To go further with this, we need to determine how to structure and work with our
  - include modelled OBS?
  - include barriers other than road crossings? (Dams, natural barriers etc)
 
-#### `11_cleanup`
+#### `10_cleanup`
 Clean up, deleting temporary tables created by above steps.
