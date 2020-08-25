@@ -1,4 +1,51 @@
--- Prune PSCIS duplicates that remain
+-- create pscis events table, linking pscis points to streams
+DROP TABLE IF EXISTS whse_fish.pscis_events;
+
+CREATE TABLE whse_fish.pscis_events
+(
+ stream_crossing_id       integer  PRIMARY KEY ,
+ model_crossing_id        integer              ,
+ distance_to_stream       double precision     ,
+ linear_feature_id        bigint               ,
+ wscode_ltree             ltree                ,
+ localcode_ltree          ltree                ,
+ fwa_watershed_code       text                 ,
+ local_watershed_code     text                 ,
+ blue_line_key            integer              ,
+ downstream_route_measure double precision     ,
+ watershed_group_code     character varying(4) ,
+ score                    integer
+);
+
+-- first, insert PSCIS points that have been manually matched to streams (by CWF)
+-- note that we include features that we know are not matched to streams,
+-- this ensures they are not added in later steps. Delete them later.
+INSERT INTO whse_fish.pscis_events
+SELECT
+  a.stream_crossing_id,
+  a.model_crossing_id,
+  ST_Distance(p.geom, s.geom) as distance_to_stream,
+  a.linear_feature_id,
+  s.wscode_ltree,
+  s.localcode_ltree,
+  s.fwa_watershed_code,
+  s.local_watershed_code,
+  s.blue_line_key,
+  (ST_LineLocatePoint(
+    s.geom, ST_ClosestPoint(s.geom,
+                            p.geom)
+    )
+     * s.length_metre) + s.downstream_route_measure
+    AS downstream_route_measure,
+  s.watershed_group_code,
+  NULL as score
+FROM whse_fish.pscis_stream_matching a
+INNER JOIN whse_fish.pscis_points_all p
+ON a.stream_crossing_id = p.stream_crossing_id
+LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_sp s
+ON a.linear_feature_id = s.linear_feature_id;
+
+-- Now insert data from the prelim tables, pruning PSCIS duplicates that remain
 
 -- First, find all crossings on same stream within 5m of another
 -- in the _prelim3 table
@@ -9,9 +56,8 @@
 --  - most recently assessed
 --  - closest source point to stream
 
-DROP TABLE IF EXISTS whse_fish.pscis_events;
 
-CREATE TABLE whse_fish.pscis_events AS
+INSERT INTO whse_fish.pscis_events
 SELECT
   stream_crossing_id,
   model_crossing_id,
@@ -74,6 +120,8 @@ FROM (
     status_idx,
     assessment_date,
     distance_to_stream)
-AS prune;
+AS prune
+ON CONFLICT DO NOTHING; -- don't re-insert data we've already manually matched
 
-ALTER TABLE whse_fish.pscis_events ADD PRIMARY KEY (stream_crossing_id);
+-- now delete crossings that aren't matched to streams
+DELETE FROM whse_fish.pscis_events WHERE linear_feature_id IS NULL;
