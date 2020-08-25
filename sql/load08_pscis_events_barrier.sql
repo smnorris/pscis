@@ -11,9 +11,7 @@ SELECT
     THEN 'HABITAT CONFIRMATION'
     ELSE p.current_pscis_status
   END AS pscis_status,
-  p.current_barrier_result_code,
-  -- include the source geometry just to make things simple
-  p.geom
+  p.current_barrier_result_code
 FROM whse_fish.pscis_events e
 INNER JOIN whse_fish.pscis_points_all p
 ON e.stream_crossing_id = p.stream_crossing_id
@@ -30,3 +28,4 @@ CREATE INDEX ON whse_fish.pscis_events_barrier USING GIST (wscode_ltree);
 CREATE INDEX ON whse_fish.pscis_events_barrier USING BTREE (wscode_ltree);
 CREATE INDEX ON whse_fish.pscis_events_barrier USING GIST (localcode_ltree);
 CREATE INDEX ON whse_fish.pscis_events_barrier USING BTREE (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_barrier USING GIST (geom);

@@ -14,14 +14,15 @@ CREATE TABLE whse_fish.pscis_events
  blue_line_key            integer              ,
  downstream_route_measure double precision     ,
  watershed_group_code     character varying(4) ,
- score                    integer
+ score                    integer              ,
+ geom                     geometry(Point, 3005)
 );
 
 -- first, insert PSCIS points that have been manually matched to streams (by CWF)
 -- note that we include features that we know are not matched to streams,
 -- this ensures they are not added in later steps. Delete them later.
-INSERT INTO whse_fish.pscis_events
-SELECT
+WITH referenced AS
+(SELECT
   a.stream_crossing_id,
   a.model_crossing_id,
   ST_Distance(p.geom, s.geom) as distance_to_stream,
@@ -31,19 +32,33 @@ SELECT
   s.fwa_watershed_code,
   s.local_watershed_code,
   s.blue_line_key,
-  (ST_LineLocatePoint(
-    s.geom, ST_ClosestPoint(s.geom,
-                            p.geom)
-    )
-     * s.length_metre) + s.downstream_route_measure
-    AS downstream_route_measure,
+  -- reference the point to the stream, making output measure an integer
+  -- (ensuring point measure is between stream's downtream measure and upstream measure)
+  CEIL(GREATEST(s.downstream_route_measure, FLOOR(LEAST(s.upstream_route_measure,
+  (ST_LineLocatePoint(s.geom, ST_ClosestPoint(s.geom, p.geom)) * s.length_metre) + s.downstream_route_measure
+  )))) as downstream_route_measure,
   s.watershed_group_code,
-  NULL as score
+  NULL::integer as score
 FROM whse_fish.pscis_stream_matching a
 INNER JOIN whse_fish.pscis_points_all p
 ON a.stream_crossing_id = p.stream_crossing_id
 LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_sp s
-ON a.linear_feature_id = s.linear_feature_id;
+ON a.linear_feature_id = s.linear_feature_id)
+
+-- ensure that we include points that do not get referenced
+-- (so they are not added later by the automated process)
+INSERT INTO whse_fish.pscis_events
+SELECT r.*, NULL as geom
+FROM referenced r
+WHERE linear_feature_id is NULL
+UNION ALL
+SELECT
+  r.*,
+  (ST_Dump(ST_Force2D(ST_locateAlong(s.geom, r.downstream_route_measure)))).geom as geom
+FROM referenced r
+INNER JOIN whse_basemapping.fwa_stream_networks_sp s
+ON r.linear_feature_id = s.linear_feature_id
+WHERE r.linear_feature_id is NOT NULL;
 
 -- Now insert data from the prelim tables, pruning PSCIS duplicates that remain
 
@@ -59,18 +74,19 @@ ON a.linear_feature_id = s.linear_feature_id;
 
 INSERT INTO whse_fish.pscis_events
 SELECT
-  stream_crossing_id,
-  model_crossing_id,
-  distance_to_stream,
-  linear_feature_id,
-  wscode_ltree,
-  localcode_ltree,
-  fwa_watershed_code,
-  local_watershed_code,
-  blue_line_key,
-  downstream_route_measure,
-  watershed_group_code,
-  score
+  p.stream_crossing_id,
+  p.model_crossing_id,
+  p.distance_to_stream,
+  p.linear_feature_id,
+  p.wscode_ltree,
+  p.localcode_ltree,
+  p.fwa_watershed_code,
+  p.local_watershed_code,
+  p.blue_line_key,
+  p.downstream_route_measure,
+  p.watershed_group_code,
+  p.score,
+  ST_Force2D((ST_Dump(ST_LocateAlong(s.geom, p.downstream_route_measure))).geom) as geom
 FROM (
   SELECT DISTINCT ON (blue_line_key, m_mid)
       a.stream_crossing_id,
@@ -120,8 +136,19 @@ FROM (
     status_idx,
     assessment_date,
     distance_to_stream)
-AS prune
+AS p
+INNER JOIN whse_basemapping.fwa_stream_networks_sp s
+ON p.linear_feature_id = s.linear_feature_id
 ON CONFLICT DO NOTHING; -- don't re-insert data we've already manually matched
 
 -- now delete crossings that aren't matched to streams
 DELETE FROM whse_fish.pscis_events WHERE linear_feature_id IS NULL;
+
+CREATE INDEX ON whse_fish.pscis_events (model_crossing_id);
+CREATE INDEX ON whse_fish.pscis_events (linear_feature_id);
+CREATE INDEX ON whse_fish.pscis_events (blue_line_key);
+CREATE INDEX ON whse_fish.pscis_events USING GIST (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events USING GIST (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events USING BTREE (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events USING GIST (geom);
