@@ -1,7 +1,7 @@
 -- create pscis events table, linking pscis points to streams
-DROP TABLE IF EXISTS whse_fish.pscis_events;
+DROP TABLE IF EXISTS whse_fish.pscis_events_sp;
 
-CREATE TABLE whse_fish.pscis_events
+CREATE TABLE whse_fish.pscis_events_sp
 (
  stream_crossing_id       integer  PRIMARY KEY ,
  model_crossing_id        integer              ,
@@ -57,7 +57,7 @@ ON a.stream_crossing_id = hc.stream_crossing_id
 )
 -- ensure that we include points that do not get referenced
 -- (so they are not added later by the automated process)
-INSERT INTO whse_fish.pscis_events
+INSERT INTO whse_fish.pscis_events_sp
 SELECT r.*, NULL as geom
 FROM referenced r
 WHERE linear_feature_id is NULL
@@ -82,7 +82,7 @@ WHERE r.linear_feature_id is NOT NULL;
 --  - closest source point to stream
 
 
-INSERT INTO whse_fish.pscis_events
+INSERT INTO whse_fish.pscis_events_sp
 SELECT
   p.stream_crossing_id,
   p.model_crossing_id,
@@ -162,13 +162,13 @@ ON p.stream_crossing_id = hc.stream_crossing_id
 ON CONFLICT DO NOTHING; -- don't re-insert data we've already manually matched
 
 -- now delete crossings that aren't matched to streams
-DELETE FROM whse_fish.pscis_events WHERE linear_feature_id IS NULL;
+DELETE FROM whse_fish.pscis_events_sp WHERE linear_feature_id IS NULL;
 
-CREATE INDEX ON whse_fish.pscis_events (model_crossing_id);
-CREATE INDEX ON whse_fish.pscis_events (linear_feature_id);
-CREATE INDEX ON whse_fish.pscis_events (blue_line_key);
-CREATE INDEX ON whse_fish.pscis_events USING GIST (wscode_ltree);
-CREATE INDEX ON whse_fish.pscis_events USING BTREE (wscode_ltree);
-CREATE INDEX ON whse_fish.pscis_events USING GIST (localcode_ltree);
-CREATE INDEX ON whse_fish.pscis_events USING BTREE (localcode_ltree);
-CREATE INDEX ON whse_fish.pscis_events USING GIST (geom);
+CREATE INDEX ON whse_fish.pscis_events_sp (model_crossing_id);
+CREATE INDEX ON whse_fish.pscis_events_sp (linear_feature_id);
+CREATE INDEX ON whse_fish.pscis_events_sp (blue_line_key);
+CREATE INDEX ON whse_fish.pscis_events_sp USING GIST (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_sp USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_sp USING GIST (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_sp USING BTREE (localcode_ltree);
+CREATE INDEX ON whse_fish.pscis_events_sp USING GIST (geom);
