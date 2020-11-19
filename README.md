@@ -1,5 +1,7 @@
 # PSCIS
 
+**moved to https://github.com/smnorris/bcfishpass/tree/main/01_prep/02_pcis**
+
 The [BC Provincial Stream Crossing Information System](https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/land-based-investment/investment-categories/fish-passage) (PSCIS) monitors fish passage on road-stream crossings throughout British Columbia. This repository downloads  PSCIS data to a Postgres db and links the crossings to the BC Freshwater Atlas - permitting upstream/downstream queries that enable  reporting on linear habitat potentially blocked by failed culverts.
 
 ## Requirements
